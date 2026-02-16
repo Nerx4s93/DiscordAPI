@@ -23,21 +23,18 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
 
     private const string BaseUrl = "https://discord.com/api/v9";
 
-    private DiscordUser? _userApiDTO;
-
     public DiscordClient(string token) : this(token, proxy: null) { }
 
     #region Информация о боте
 
     public async Task<DiscordUser> GetMe()
     {
-        _userApiDTO = await MakeRequestAsync<DiscordUser>("users/@me");
-        return _userApiDTO;
+        return await MakeRequestAsync<DiscordUser>("users/@me");
     }
 
     public async Task<Image?> GetAvatar()
     {
-        var user = _userApiDTO ?? await GetMe();
+        var user = await MakeRequestAsync<DiscordUser>("users/@me");
 
         if (string.IsNullOrEmpty(user.Avatar))
         {
