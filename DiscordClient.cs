@@ -23,15 +23,15 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
 
     private const string BaseUrl = "https://discord.com/api/v9";
 
-    private UserApiDTO? _userApiDTO;
+    private DiscordUser? _userApiDTO;
 
     public DiscordClient(string token) : this(token, proxy: null) { }
 
     #region Информация о боте
 
-    public async Task<UserApiDTO> GetMe()
+    public async Task<DiscordUser> GetMe()
     {
-        _userApiDTO = await MakeRequestAsync<UserApiDTO>("users/@me");
+        _userApiDTO = await MakeRequestAsync<DiscordUser>("users/@me");
         return _userApiDTO;
     }
 
@@ -53,32 +53,32 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
 
     #region Сервера
 
-    public async Task<IReadOnlyList<GuildApiDTO>> GetGuildsAsync()
+    public async Task<IReadOnlyList<DiscordGuild>> GetGuildsAsync()
     {
-        return await MakeRequestAsync<IReadOnlyList<GuildApiDTO>>("users/@me/guilds");
+        return await MakeRequestAsync<IReadOnlyList<DiscordGuild>>("users/@me/guilds");
     }
 
-    public async Task<GuildApiDTO> GetGuildInfoAsync(string guildId)
-    {
-        if (string.IsNullOrWhiteSpace(guildId))
-        {
-            throw new ArgumentNullException(nameof(guildId));
-        }
-
-        return await MakeRequestAsync<GuildApiDTO>($"guilds/{guildId}");
-    }
-
-    public async Task<IReadOnlyList<ChannelApiDTO>> GetGuildChannelsAsync(string guildId)
+    public async Task<DiscordGuild> GetGuildInfoAsync(string guildId)
     {
         if (string.IsNullOrWhiteSpace(guildId))
         {
             throw new ArgumentNullException(nameof(guildId));
         }
 
-        return await MakeRequestAsync<IReadOnlyList<ChannelApiDTO>>($"guilds/{guildId}/channels");
+        return await MakeRequestAsync<DiscordGuild>($"guilds/{guildId}");
     }
 
-    public async Task<IReadOnlyList<MessageApiDTO>> GetChannelMessagesAsync(
+    public async Task<IReadOnlyList<DiscordChannel>> GetGuildChannelsAsync(string guildId)
+    {
+        if (string.IsNullOrWhiteSpace(guildId))
+        {
+            throw new ArgumentNullException(nameof(guildId));
+        }
+
+        return await MakeRequestAsync<IReadOnlyList<DiscordChannel>>($"guilds/{guildId}/channels");
+    }
+
+    public async Task<IReadOnlyList<DiscrodMessage>> GetChannelMessagesAsync(
         string channelId, 
         int limit = 100, 
         string? beforeMessageId = null)
@@ -99,11 +99,11 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
             .Build();
         var endpoint = $"channels/{channelId}/messages{query}";
 
-        var messages = await MakeRequestAsync<IReadOnlyList<MessageApiDTO>>(endpoint);
+        var messages = await MakeRequestAsync<IReadOnlyList<DiscrodMessage>>(endpoint);
         return messages;
     }
 
-    public async Task<MemberApiDTO> GetUser(string guildId, string userId)
+    public async Task<DiscordMember> GetUser(string guildId, string userId)
     {
         if (string.IsNullOrWhiteSpace(guildId))
         {
@@ -116,7 +116,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         }
 
         var endpoint = $"guilds/{guildId}/members/{userId}";
-        var member = await MakeRequestAsync<MemberApiDTO>(endpoint);
+        var member = await MakeRequestAsync<DiscordMember>(endpoint);
         return member;
     }
 

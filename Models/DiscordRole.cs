@@ -2,7 +2,7 @@
 
 namespace DiscordApi.Models;
 
-public class RoleApiDTO
+public class DiscordRole
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = null!;

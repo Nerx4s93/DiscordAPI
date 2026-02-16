@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DiscordApi.Models;
 
-public sealed class MessageApiDTO
+public sealed class DiscrodMessage
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = null!;
@@ -18,5 +18,5 @@ public sealed class MessageApiDTO
     public DateTime Timestamp { get; init; }
 
     [JsonPropertyName("author")]
-    public UserApiDTO Author { get; init; } = null!;
+    public DiscordUser Author { get; init; } = null!;
 }

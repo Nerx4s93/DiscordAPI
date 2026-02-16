@@ -2,7 +2,7 @@
 
 namespace DiscordApi.Models;
 
-public sealed class PermissionOverwriteApiDTO
+public sealed class DiscordPermissionOverwrite
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = null!;

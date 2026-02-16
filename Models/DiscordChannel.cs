@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DiscordApi.Models;
 
-public sealed class ChannelApiDTO
+public sealed class DiscordChannel
 {
     [JsonPropertyName("id")]
     public string Id { get; set; } = null!;
@@ -45,5 +45,5 @@ public sealed class ChannelApiDTO
     public string? RtcRegion { get; set; }
 
     [JsonPropertyName("permission_overwrites")]
-    public List<PermissionOverwriteApiDTO> PermissionOverwrites { get; set; } = [];
+    public List<DiscordPermissionOverwrite> PermissionOverwrites { get; set; } = [];
 }
