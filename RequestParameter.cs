@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DiscordApi;
+namespace DiscordAPI;
 
 internal class RequestParameter
 {

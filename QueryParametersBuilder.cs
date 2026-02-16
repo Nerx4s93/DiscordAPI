@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace DiscordApi;
+namespace DiscordAPI;
 
 public class QueryParametersBuilder
 {

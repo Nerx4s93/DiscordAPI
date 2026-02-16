@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace DiscordApi.Models;
+namespace DiscordAPI.Models;
 
 public sealed class DiscordUser
 {

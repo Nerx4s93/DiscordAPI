@@ -1,4 +1,4 @@
-﻿namespace DiscordApi;
+﻿namespace DiscordAPI;
 
 public sealed class ProxyInfo
 {
