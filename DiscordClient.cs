@@ -168,7 +168,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         httpClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue(token);
         httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "DiscordDetective/1.0 (api-client)");
+            "DiscordApi/1.0 (api-client)");
 
         return httpClient;
     }
