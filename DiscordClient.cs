@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
@@ -196,6 +197,50 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         var endpoint = $"guilds/{guildId}/members/{userId}";
         var member = await MakeRequestAsync<DiscordMember>(endpoint);
         return member;
+    }
+
+    #endregion
+
+    #region Личные сообщения и группы
+
+    /// <summary>
+    /// Возвращает список всех личных сообщений и групповых чатов текущего пользователя.
+    /// </summary>
+    /// <returns>
+    /// Коллекция <see cref="DiscordChannel"/>, представляющая все доступные чаты.
+    /// </returns>
+    public async Task<IReadOnlyList<DiscordChannel>> GetMyChannelsAsync()
+    {
+        return await MakeRequestAsync<IReadOnlyList<DiscordChannel>>("users/@me/channels");
+    }
+
+    /// <summary>
+    /// Возвращает список только личных сообщений (DM) текущего пользователя.
+    /// </summary>
+    /// <returns>
+    /// Коллекция <see cref="DiscordChannel"/> только с типом 1 (личные сообщения).
+    /// </returns>
+    public async Task<IReadOnlyList<DiscordChannel>> GetPrivateMessagesAsync()
+    {
+        var allChannels = await GetMyChannelsAsync();
+
+        // Тип 1 = личные сообщения (DM)
+        return [.. allChannels.Where(c => c.Type == 1)];
+    }
+
+
+    /// <summary>
+    /// Возвращает список только групповых чатов текущего пользователя.
+    /// </summary>
+    /// <returns>
+    /// Коллекция <see cref="DiscordChannel"/> только с типом 3 (групповые чаты).
+    /// </returns>
+    public async Task<IReadOnlyList<DiscordChannel>> GetGroupChatsAsync()
+    {
+        var allChannels = await GetMyChannelsAsync();
+
+        // Тип 3 = личные сообщения (DM)
+        return [.. allChannels.Where(c => c.Type == 3)];
     }
 
     #endregion

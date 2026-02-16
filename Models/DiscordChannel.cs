@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Text.Json.Serialization;
 
 namespace DiscordAPI.Models;
@@ -9,13 +11,13 @@ public sealed class DiscordChannel
     public string Id { get; set; } = null!;
 
     [JsonPropertyName("guild_id")]
-    public string GuildId { get; set; } = null!;
+    public string? GuildId { get; set; }
 
     [JsonPropertyName("type")]
     public int Type { get; set; }
 
     [JsonPropertyName("name")]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; }
 
     [JsonPropertyName("parent_id")]
     public string? ParentId { get; set; }
@@ -45,5 +47,21 @@ public sealed class DiscordChannel
     public string? RtcRegion { get; set; }
 
     [JsonPropertyName("permission_overwrites")]
-    public List<DiscordPermissionOverwrite> PermissionOverwrites { get; set; } = [];
+    public List<DiscordPermissionOverwrite>? PermissionOverwrites { get; set; }
+
+    [JsonPropertyName("recipients")]
+    public List<DiscordUser>? Recipients { get; set; }
+
+    [JsonPropertyName("owner_id")]
+    public string? OwnerId { get; set; }
+
+    [JsonPropertyName("last_pin_timestamp")]
+    public DateTime? LastPinTimestamp { get; set; }
+
+    [JsonPropertyName("icon")]
+    public string? Icon { get; set; }
+
+    [JsonIgnore]
+    public string? IconUrl => string.IsNullOrEmpty(Icon) ? null : 
+        $"https://cdn.discordapp.com/channel-icons/{Id}/{Icon}.png";
 }
