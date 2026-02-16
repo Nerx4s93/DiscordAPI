@@ -102,6 +102,22 @@ IReadOnlyList<DiscrodMessage> messages = await client.GetChannelMessagesAsync("9
 ``` csharp
 DiscordMember member = await client.GetUser("guildId", "userId");
 ```
+### Личные сообщения и группы
+1) GetMyChannelsAsync()
+Возвращает список личных чатов и групп.
+``` csharp
+IReadOnlyList<DiscordChannel> channels = await client.GetMyChannelsAsync();
+```
+3) GetPrivateMessagesAsync()
+Возвращает список личных чатов.
+``` csharp
+IReadOnlyList<DiscordChannel> channels = await client.GetPrivateMessagesAsync();
+```
+5) GetGroupChatsAsync()
+Возвращает список групп.
+``` csharp
+IReadOnlyList<DiscordChannel> channels = await client.GetGroupChatsAsync();
+```
 
 ## ⚠️ Отказ от ответственности
 Этот проект не связан с Discord Inc.
