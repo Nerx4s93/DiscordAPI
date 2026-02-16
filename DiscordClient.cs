@@ -27,11 +27,25 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
 
     #region Информация о боте
 
+    /// <summary>
+    /// Возвращает информацию о текущем пользователе (боте),
+    /// от имени которого выполняются запросы.
+    /// </summary>
+    /// <returns>
+    /// Объект <see cref="DiscordUser"/> с данными текущего пользователя.
+    /// </returns>
     public async Task<DiscordUser> GetMe()
     {
         return await MakeRequestAsync<DiscordUser>("users/@me");
     }
 
+    /// <summary>
+    /// Загружает аватар текущего пользователя (бота).
+    /// </summary>
+    /// <returns>
+    /// Объект <see cref="Image"/> с аватаром,
+    /// либо <c>null</c>, если аватар отсутствует.
+    /// </returns>
     public async Task<Image?> GetAvatar()
     {
         var user = await MakeRequestAsync<DiscordUser>("users/@me");
@@ -50,11 +64,30 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
 
     #region Сервера
 
+    /// <summary>
+    /// Возвращает список серверов (гильдий),
+    /// в которых состоит текущий пользователь.
+    /// </summary>
+    /// <returns>
+    /// Коллекция <see cref="DiscordGuild"/>.
+    /// </returns>
     public async Task<IReadOnlyList<DiscordGuild>> GetGuildsAsync()
     {
         return await MakeRequestAsync<IReadOnlyList<DiscordGuild>>("users/@me/guilds");
     }
 
+    /// <summary>
+    /// Возвращает подробную информацию о сервере по его идентификатору.
+    /// </summary>
+    /// <param name="guildId">
+    /// Идентификатор сервера.
+    /// </param>
+    /// <returns>
+    /// Объект <see cref="DiscordGuild"/> с информацией о сервере.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Возникает, если <paramref name="guildId"/> пустой или null.
+    /// </exception>
     public async Task<DiscordGuild> GetGuildInfoAsync(string guildId)
     {
         if (string.IsNullOrWhiteSpace(guildId))
@@ -65,6 +98,18 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         return await MakeRequestAsync<DiscordGuild>($"guilds/{guildId}");
     }
 
+    /// <summary>
+    /// Возвращает список каналов указанного сервера.
+    /// </summary>
+    /// <param name="guildId">
+    /// Идентификатор сервера.
+    /// </param>
+    /// <returns>
+    /// Коллекция <see cref="DiscordChannel"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Возникает, если <paramref name="guildId"/> пустой или null.
+    /// </exception>
     public async Task<IReadOnlyList<DiscordChannel>> GetGuildChannelsAsync(string guildId)
     {
         if (string.IsNullOrWhiteSpace(guildId))
@@ -75,6 +120,27 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         return await MakeRequestAsync<IReadOnlyList<DiscordChannel>>($"guilds/{guildId}/channels");
     }
 
+    /// <summary>
+    /// Возвращает сообщения из указанного канала.
+    /// </summary>
+    /// <param name="channelId">
+    /// Идентификатор канала.
+    /// </param>
+    /// <param name="limit">
+    /// Максимальное количество сообщений (от 1 до 100).
+    /// </param>
+    /// <param name="beforeMessageId">
+    /// Идентификатор сообщения, перед которым нужно получить сообщения (опционально).
+    /// </param>
+    /// <returns>
+    /// Коллекция <see cref="DiscrodMessage"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Возникает, если <paramref name="channelId"/> пустой или null.
+    /// </exception>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Возникает, если <paramref name="limit"/> вне диапазона 1–100.
+    /// </exception>
     public async Task<IReadOnlyList<DiscrodMessage>> GetChannelMessagesAsync(
         string channelId, 
         int limit = 100, 
@@ -92,7 +158,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
 
         var query = QueryParametersBuilder.Create()
             .AddParameter("limit", limit)
-            .AddParameterIf(!string.IsNullOrEmpty(beforeMessageId), "before", beforeMessageId)
+            .AddParameterIf(!string.IsNullOrEmpty(beforeMessageId), "before", beforeMessageId!)
             .Build();
         var endpoint = $"channels/{channelId}/messages{query}";
 
@@ -100,6 +166,21 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         return messages;
     }
 
+    /// <summary>
+    /// Возвращает информацию о пользователе на указанном сервере.
+    /// </summary>
+    /// <param name="guildId">
+    /// Идентификатор сервера.
+    /// </param>
+    /// <param name="userId">
+    /// Идентификатор пользователя.
+    /// </param>
+    /// <returns>
+    /// Объект <see cref="DiscordMember"/> с информацией о пользователе.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Возникает, если <paramref name="guildId"/> или <paramref name="userId"/> пустые или null.
+    /// </exception>
     public async Task<DiscordMember> GetUser(string guildId, string userId)
     {
         if (string.IsNullOrWhiteSpace(guildId))
@@ -116,7 +197,6 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         var member = await MakeRequestAsync<DiscordMember>(endpoint);
         return member;
     }
-
 
     #endregion
 
