@@ -134,7 +134,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// Идентификатор сообщения, перед которым нужно получить сообщения (опционально).
     /// </param>
     /// <returns>
-    /// Коллекция <see cref="DiscrodMessage"/>.
+    /// Коллекция <see cref="DiscordMessage"/>.
     /// </returns>
     /// <exception cref="ArgumentNullException">
     /// Возникает, если <paramref name="channelId"/> пустой или null.
@@ -142,7 +142,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// <exception cref="ArgumentOutOfRangeException">
     /// Возникает, если <paramref name="limit"/> вне диапазона 1–100.
     /// </exception>
-    public async Task<IReadOnlyList<DiscrodMessage>> GetChannelMessagesAsync(
+    public async Task<IReadOnlyList<DiscordMessage>> GetChannelMessagesAsync(
         string channelId, 
         int limit = 100, 
         string? beforeMessageId = null)
@@ -163,7 +163,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
             .Build();
         var endpoint = $"channels/{channelId}/messages{query}";
 
-        var messages = await MakeRequestAsync<IReadOnlyList<DiscrodMessage>>(endpoint);
+        var messages = await MakeRequestAsync<IReadOnlyList<DiscordMessage>>(endpoint);
         return messages;
     }
 

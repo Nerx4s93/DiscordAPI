@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace DiscordAPI.Models;
 
-public sealed class DiscrodMessage
+public sealed class DiscordMessage
 {
     [JsonPropertyName("id")]
     public string Id { get; init; } = null!;
