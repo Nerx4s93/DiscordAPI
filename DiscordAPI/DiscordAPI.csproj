@@ -1,14 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows</TargetFramework>
 
-  <ItemGroup>
-    <PackageReference Include="APIEngine" Version="1.0.3" />
-    <PackageReference Include="System.Drawing.Common" Version="10.0.1" />
-  </ItemGroup>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<PackageId>DiscordAPI</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Nerx4s93</Authors>
+		<Description>.NET client for Discord user API</Description>
+		<PackageTags>discord;user;api;bot;bots</PackageTags>
+
+		<RepositoryUrl>https://github.com/Nerx4s93/DiscordAPI</RepositoryUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+
+		<PackageIcon>icon.png</PackageIcon>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="APIEngine" Version="1.0.3" />
+		<PackageReference Include="System.Drawing.Common" Version="10.0.1" />
+	</ItemGroup>
 
 </Project>
