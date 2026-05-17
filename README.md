@@ -1,22 +1,16 @@
 # DiscordAPI
-.NET клиент для Discord REST API (v9)
-Работает с пользовательскими токенами. Идеально подходит для автоматизации и скриптов.
+.NET клиент для Discord REST API (v9) с поддержкой пользовательских токенов.
 
-## 🚀 Возможности
-- 📡 Работа с Discord REST API v9
-- 👤 Получение информации о пользователе
-- 🏠 Работа с серверами (guilds)
-- 💬 Получение сообщений каналов
-- 👥 Получение участников сервера
-- 🧩 Полностью типизированные модели
-- ⚡ Асинхронный API (async/await)
-- 🌐 Поддержка прокси
-- 🪶 Минимальные зависимости
+Подходит для автоматизации, скриптов и кастомных клиентов.
 
-## 📦 Установка
-Пока, что только скачать и скомпилировать исходный код.
+## Установка
+Пока доступен только через исходный код:
+```bash
+git clone <repo>
+dotnet build
+```
 
-## 🔑 Аутентификация
+## Аутентификация
 1.  **Откройте Discrod в браузере**.
 2.  **Активируйте инструменты разработчика:**
     *   Windows/Linux: `F12` или `Ctrl+Shift+I`
@@ -30,13 +24,13 @@
     *   Прокрутите список заголовков до поля `Authorization`.
 7.  **Скопируйте значение.** Выделите и скопируйте **все** содержимое после `Authorization: ` (например, `session-password` или длинный набор символов).
 
-### 🚨 Вважные правила безопасности
+### ⚠️ Важно
 **Никогда** не коммитьте токен в Git. Добавьте файл с токеном в `.gitignore`.
 Помните: этот токен дает полный доступ к вашему аккаунту Discrod.
 ### ❓ Почему так сложно?
 Discrod не предоставляет официального способа получить пользовательский токен для скриптов.
 
-## ⚡ Быстрый старт
+## Быстрый старт
 ``` csharp
 using var client = new DiscordClient("YOUR_TOKEN");
 
@@ -60,71 +54,9 @@ var messages = await client.GetChannelMessagesAsync("123456789", limit: 10);
 Console.WriteLine($"Последних сообщений: {messages.Count}");
 ```
 
-## 📚 API
-### Бот
-1) GetMe()
-Возвращает информацию о текущем пользователе (боте).
-``` csharp
-DiscordUser user = await client.GetMe();
-```
-2) GetAvatar()
-Загружает аватар бота.
-``` csharp
-Image? avatar = await client.GetAvatar();
-```
-Возвращает null, если аватар отсутствует.
-
-### Сервера
-1) GetGuildsAsync()
-Возвращает список серверов бота.
-``` csharp
-IReadOnlyList<DiscordGuild> guilds = await client.GetGuildsAsync();
-```
-2) GetGuildInfoAsync(string guildId)
-Получает информацию о сервере.
-``` csharp
-DiscordGuild guild = await client.GetGuildInfoAsync("123456789");
-```
-3) GetGuildChannelsAsync(string guildId)
-Получает список каналов сервера.
-``` csharp
-IReadOnlyList<DiscordChannel> channels = await client.GetGuildChannelsAsync("123456789");
-```
-4) GetChannelMessagesAsync(string channelId, int limit = 100, string? beforeMessageId = null)
-Получает сообщения канала.
-limit — от 1 до 100
-можно указать beforeMessageId для пагинации
-``` csharp
-IReadOnlyList<DiscrodMessage> messages = await client.GetChannelMessagesAsync("987654321", 50);
-```
-5) GetUser(string guildId, string userId)
-Получает информацию о пользователе на сервере.
-``` csharp
-DiscordMember member = await client.GetUser("guildId", "userId");
-```
-
-### Личные сообщения и группы
-1) GetMyChannelsAsync()
-Возвращает список личных чатов и групп.
-``` csharp
-IReadOnlyList<DiscordChannel> channels = await client.GetMyChannelsAsync();
-```
-3) GetPrivateMessagesAsync()
-Возвращает список личных чатов.
-``` csharp
-IReadOnlyList<DiscordChannel> channels = await client.GetPrivateMessagesAsync();
-```
-5) GetGroupChatsAsync()
-Возвращает список групп.
-``` csharp
-IReadOnlyList<DiscordChannel> channels = await client.GetGroupChatsAsync();
-```
-
 ## ⚠️ Отказ от ответственности
 Этот проект не связан с Discord Inc.
 
-Использование пользовательских токенов для автоматизации может нарушать Условия использования Discord.
-Библиотека предназначена исключительно для образовательных целей.
+Использование пользовательских токенов для автоматизации может нарушать Условия использования Discord. Библиотека предназначена исключительно для образовательных целей.
 
-Используя данное программное обеспечение, вы соглашаетесь с тем, что полностью
-несёте ответственность за любые последствия, включая временную или постоянную блокировку аккаунта.
+Используя данное программное обеспечение, вы соглашаетесь с тем, что полностью несёте ответственность за любые последствия, включая временную или постоянную блокировку аккаунта.
