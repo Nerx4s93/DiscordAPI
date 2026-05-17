@@ -1,20 +1,19 @@
-﻿using System;
+﻿using APIEngine;
+using DiscordAPI.Models;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-using DiscordAPI.Models;
-
 namespace DiscordAPI;
 
-public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
+public class DiscordClient : HttpApiClient
 {
-    private readonly string _token = token ?? throw new ArgumentNullException(nameof(token));
-    private readonly HttpClient _httpClient = CreateHttpClient(proxy, token);
+    private readonly string _token;
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -22,9 +21,11 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
         WriteIndented = false
     };
 
-    private const string BaseUrl = "https://discord.com/api/v9";
-
-    public DiscordClient(string token) : this(token, proxy: null) { }
+    public DiscordClient(string token, ProxyInfo? proxy = null)
+        : base("https://discord.com/api/v9", proxy)
+    {
+        _token = token ?? throw new ArgumentNullException(nameof(token));
+    }
 
     #region Информация о боте
 
@@ -37,7 +38,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// </returns>
     public async Task<DiscordUser> GetMe()
     {
-        return await MakeRequestAsync<DiscordUser>("users/@me");
+        var response = await GetAsync("users/@me");
+        return JsonSerializer.Deserialize<DiscordUser>(response, _jsonOptions)!;
     }
 
     /// <summary>
@@ -49,14 +51,14 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// </returns>
     public async Task<Image?> GetAvatar()
     {
-        var user = await MakeRequestAsync<DiscordUser>("users/@me");
+        var user = await GetMe();
 
         if (string.IsNullOrEmpty(user.Avatar))
         {
             return null;
         }
 
-        var response = await MakeRequestAsync(user.AvatarUrl!);
+        var response = await GetRawAsync(user.AvatarUrl!);
         await using var stream = await response.Content.ReadAsStreamAsync();
         return Image.FromStream(stream);
     }
@@ -74,7 +76,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// </returns>
     public async Task<IReadOnlyList<DiscordGuild>> GetGuildsAsync()
     {
-        return await MakeRequestAsync<IReadOnlyList<DiscordGuild>>("users/@me/guilds");
+        var response = await GetAsync("users/@me/guilds");
+        return JsonSerializer.Deserialize<IReadOnlyList<DiscordGuild>>(response, _jsonOptions)!;
     }
 
     /// <summary>
@@ -96,7 +99,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
             throw new ArgumentNullException(nameof(guildId));
         }
 
-        return await MakeRequestAsync<DiscordGuild>($"guilds/{guildId}");
+        var response = await GetAsync($"guilds/{guildId}");
+        return JsonSerializer.Deserialize<DiscordGuild>(response, _jsonOptions)!;
     }
 
     /// <summary>
@@ -118,7 +122,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
             throw new ArgumentNullException(nameof(guildId));
         }
 
-        return await MakeRequestAsync<IReadOnlyList<DiscordChannel>>($"guilds/{guildId}/channels");
+        var response = await GetAsync($"guilds/{guildId}/channels");
+        return JsonSerializer.Deserialize<IReadOnlyList<DiscordChannel>>(response, _jsonOptions)!;
     }
 
     /// <summary>
@@ -143,8 +148,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// Возникает, если <paramref name="limit"/> вне диапазона 1–100.
     /// </exception>
     public async Task<IReadOnlyList<DiscordMessage>> GetChannelMessagesAsync(
-        string channelId, 
-        int limit = 100, 
+        string channelId,
+        int limit = 100,
         string? beforeMessageId = null)
     {
         if (string.IsNullOrWhiteSpace(channelId))
@@ -163,8 +168,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
             .Build();
         var endpoint = $"channels/{channelId}/messages{query}";
 
-        var messages = await MakeRequestAsync<IReadOnlyList<DiscordMessage>>(endpoint);
-        return messages;
+        var response = await GetAsync(endpoint);
+        return JsonSerializer.Deserialize<IReadOnlyList<DiscordMessage>>(response, _jsonOptions)!;
     }
 
     /// <summary>
@@ -194,9 +199,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
             throw new ArgumentNullException(nameof(userId));
         }
 
-        var endpoint = $"guilds/{guildId}/members/{userId}";
-        var member = await MakeRequestAsync<DiscordMember>(endpoint);
-        return member;
+        var response = await GetAsync($"guilds/{guildId}/members/{userId}");
+        return JsonSerializer.Deserialize<DiscordMember>(response, _jsonOptions)!;
     }
 
     #endregion
@@ -211,7 +215,8 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     /// </returns>
     public async Task<IReadOnlyList<DiscordChannel>> GetMyChannelsAsync()
     {
-        return await MakeRequestAsync<IReadOnlyList<DiscordChannel>>("users/@me/channels");
+        var response = await GetAsync("users/@me/channels");
+        return JsonSerializer.Deserialize<IReadOnlyList<DiscordChannel>>(response, _jsonOptions)!;
     }
 
     /// <summary>
@@ -223,9 +228,7 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     public async Task<IReadOnlyList<DiscordChannel>> GetPrivateMessagesAsync()
     {
         var allChannels = await GetMyChannelsAsync();
-
-        // Тип 1 = личные сообщения (DM)
-        return [.. allChannels.Where(c => c.Type == 1)];
+        return [.. allChannels.Where(c => c.Type == 1)]; // Тип 1 = личные сообщения (DM)
     }
 
 
@@ -238,69 +241,14 @@ public class DiscordClient(string token, ProxyInfo? proxy) : IDisposable
     public async Task<IReadOnlyList<DiscordChannel>> GetGroupChatsAsync()
     {
         var allChannels = await GetMyChannelsAsync();
-
-        // Тип 3 = личные сообщения (DM)
-        return [.. allChannels.Where(c => c.Type == 3)];
+        return [.. allChannels.Where(c => c.Type == 3)]; // Тип 3 = личные сообщения (DM)
     }
 
     #endregion
 
-    #region Формирвание запроса
-
-    private async Task<T> MakeRequestAsync<T>(string endpoint)
+    protected override Task ConfigureRequestAsync(HttpRequestMessage request)
     {
-        var response = await MakeRequestAsync($"{BaseUrl}/{endpoint}");
-
-        await using var stream = await response.Content.ReadAsStreamAsync();
-        var result = await JsonSerializer.DeserializeAsync<T>(stream, _jsonOptions);
-
-        return result ?? throw new InvalidOperationException("Failed to deserialize response");
-    }
-
-    private async Task<HttpResponseMessage> MakeRequestAsync(string url)
-    {
-        using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        return response;
-    }
-
-
-    #endregion
-
-    private static HttpClient CreateHttpClient(ProxyInfo? proxy, string token)
-    {
-        var handler = new HttpClientHandler();
-
-        if (proxy != null)
-        {
-            var webProxy = new WebProxy(proxy.Host, proxy.Port);
-
-            if (proxy.HasCredentials)
-            {
-                webProxy.Credentials = new NetworkCredential(proxy.Username, proxy.Password);
-            }
-
-            handler.Proxy = webProxy;
-            handler.UseProxy = true;
-        }
-
-        var httpClient = new HttpClient(handler, disposeHandler: true)
-        {
-            Timeout = TimeSpan.FromSeconds(10)
-        };
-
-        httpClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue(token);
-        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
-            "DiscordApi/1.0 (api-client)");
-
-        return httpClient;
-    }
-
-    public void Dispose()
-    {
-        _httpClient.Dispose();
-        GC.SuppressFinalize(this);
+        request.Headers.Authorization = new AuthenticationHeaderValue(_token);
+        return Task.CompletedTask;
     }
 }
