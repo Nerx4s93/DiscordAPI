@@ -1,62 +1,64 @@
+### [-----EN-----] [[-----RU-----]](docs/README_RU.md)
+
 # DiscordAPI
-.NET клиент для Discord REST API (v9) с поддержкой пользовательских токенов.
+.NET client for Discord REST API (v9) with support for custom tokens.
 
-Подходит для автоматизации, скриптов и кастомных клиентов.
+Suitable for automation, scripts, and custom clients.
 
-## Установка
-Пока доступен только через исходный код:
+## Installation
+Currently only available through the source code:
 ```bash
 git clone <repo>
 dotnet build
 ```
 
-## Аутентификация
-1.  **Откройте Discrod в браузере**.
-2.  **Активируйте инструменты разработчика:**
-    *   Windows/Linux: `F12` или `Ctrl+Shift+I`
-    *   macOS: `Cmd+Option+I`
-3.  **Перейдите на вкладку `Network`**.
-4.  **Начните печатать** в любом активном чате. Это вызовет отправку события "печатает".
-5.  **Найдите нужный запрос.** В списке запросов ищите тот, который называется `typing` (можно воспользоваться поиском или фильтром).
-6.  **Изучите заголовки запроса:**
-    *   Нажмите на найденный запрос `typing`.
-    *   В открывшейся панели найдите секцию `Request Headers`.
-    *   Прокрутите список заголовков до поля `Authorization`.
-7.  **Скопируйте значение.** Выделите и скопируйте **все** содержимое после `Authorization: ` (например, `session-password` или длинный набор символов).
+## Authentication
+1. **Open Discrod in the browser**.
+2. **Activate the developer tools:**
+ * Windows/Linux: `F12` or `Ctrl+Shift+I`
+ * macOS: `Cmd+Option+I`
+3. **Go to the `Network` tab**.
+4. **Start typing** in any active chat. This will trigger the "typing" event.
+5. **Find the desired request.** In the list of requests, look for the one called `typing` (you can use the search or filter).
+6. **Examine the request headers:**
+ * Click on the found `typing` request.
+ * In the opened panel, find the `Request Headers` section.
+ * Scroll down the list of headers to the `Authorization` field.
+7. **Copy the value.** Select and copy
 
-### ⚠️ Важно
-**Никогда** не коммитьте токен в Git. Добавьте файл с токеном в `.gitignore`.
-Помните: этот токен дает полный доступ к вашему аккаунту Discrod.
-### ❓ Почему так сложно?
-Discrod не предоставляет официального способа получить пользовательский токен для скриптов.
+### ⚠️ Important
+**Never** commit the token to Git. Add the token file to `.gitignore`.
+Remember: this token gives full access to your Discrod account.
+### ❓ Why is it so difficult?
+Discrod does not provide an official way to obtain a custom token for scripts.
 
-## Быстрый старт
+## Quick start
 ``` csharp
 using var client = new DiscordClient("YOUR_TOKEN");
 
-// Информация о себе
+// Information about yourself
 var me = await client.GetMeAsync();
 Console.WriteLine($"[{me.Username}]");
 
-// Список серверов
+// List of servers
 var guilds = await client.GetGuildsAsync();
 foreach (var guild in guilds)
 {
-    Console.WriteLine($"Сервер: {guild.Name} (участников: {guild.MemberCount})");
-    
-    // Каналы сервера
-    var channels = await client.GetGuildChannelsAsync(guild.Id);
-    Console.WriteLine($"Каналов: {channels.Count}");
+ Console.WriteLine($"Server: {guild.Name} (members: {guild.MemberCount})");
+ 
+ // Server Channels
+ var channels = await client.GetGuildChannelsAsync(guild.Id);
+ Console.WriteLine($"Channels: {channels.Count}");
 }
 
-// Сообщения канала
+// Channel Messages
 var messages = await client.GetChannelMessagesAsync("123456789", limit: 10);
-Console.WriteLine($"Последних сообщений: {messages.Count}");
+Console.WriteLine($"Recent messages: {messages.Count}");
 ```
 
-## ⚠️ Отказ от ответственности
-Этот проект не связан с Discord Inc.
+## ⚠️ Disclaimer
+This project is not affiliated with Discord Inc.
 
-Использование пользовательских токенов для автоматизации может нарушать Условия использования Discord. Библиотека предназначена исключительно для образовательных целей.
+The use of custom tokens for automation may violate Discord's Terms of Service. The library is intended for educational purposes only.
 
-Используя данное программное обеспечение, вы соглашаетесь с тем, что полностью несёте ответственность за любые последствия, включая временную или постоянную блокировку аккаунта.
+By using this software, you agree that you are solely responsible for any consequences, including temporary or permanent account bans.
