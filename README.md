@@ -5,6 +5,8 @@
 
 Suitable for automation, scripts, and custom clients.
 
+[Documentation](DOCUMENTATION.md)
+
 ## Installation
 Currently only available through the source code:
 ```bash
