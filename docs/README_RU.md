@@ -10,8 +10,7 @@
 ## Установка
 Пока доступен только через исходный код:
 ```bash
-git clone <repo>
-dotnet build
+dotnet add package DiscordAPI.UserBot --version 1.0.0
 ```
 
 ## Аутентификация

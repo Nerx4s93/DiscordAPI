@@ -10,8 +10,7 @@ Suitable for automation, scripts, and custom clients.
 ## Installation
 Currently only available through the source code:
 ```bash
-git clone <repo>
-dotnet build
+dotnet add package DiscordAPI.UserBot --version 1.0.0
 ```
 
 ## Authentication
